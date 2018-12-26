@@ -1,0 +1,73 @@
+CREATE DATABASE LibraryTest
+
+USE LibraryTest
+GO
+
+
+--Creating tables for the database.
+CREATE TABLE Library_Branch (
+	BranchID INT PRIMARY KEY NOT NULL IDENTITY (1,1),
+	BranchName VARCHAR(50) NOT NULL,
+	Address VARCHAR(75) NOT NULL
+);
+
+CREATE TABLE Books (
+	BookID INT PRIMARY KEY NOT NULL IDENTITY (100,1),
+	Title VARCHAR(50) NOT NULL,
+	PublisherName VARCHAR(50) NOT NULL,
+	CONSTRAINT fk_PublisherName FOREIGN KEY (PublisherName) REFERENCES Publisher(PublisherName)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+ 
+--Some tables didn't have a primary key since it was actually the foreign key to references others.
+--Note to self: review how to set up a foreign key
+CREATE TABLE Book_Copies (
+	BookID INT NOT NULL,
+	BranchID INT NOT NULL,
+	Number_Of_Copies INT NOT NULL,
+	CONSTRAINT fk_Books2 FOREIGN KEY (BookID) REFERENCES Books(BookID)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+	CONSTRAINT fk_Library_Branch1 FOREIGN KEY (BranchID) REFERENCES Library_Branch(BranchID)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE Book_Loans (
+	BookID INT NOT NULL,
+	BranchID INT NOT NULL,
+	CardNo INT NOT NULL,
+	DateOut DATE NOT NULL,
+	DateDue DATE NOT NULL,
+	CONSTRAINT fk_Books1 FOREIGN KEY (BookID) REFERENCES Books(BookID)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+	CONSTRAINT fk_Library_Branch FOREIGN KEY (BranchID) REFERENCES Library_Branch(BranchID)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+	CONSTRAINT fk_Borrower FOREIGN KEY (CardNo) REFERENCES Borrower(CardNo)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE Borrower (
+	CardNo INT PRIMARY KEY NOT NULL IDENTITY (1,1),
+	Name VARCHAR(50) NOT NULL,
+	Address VARCHAR(75) NOT NULL,
+	Phone INT NOT NULL
+);
+
+CREATE TABLE Publisher (
+	PublisherName VARCHAR(50) PRIMARY KEY NOT NULL,
+	Address VARCHAR(75) NOT NULL,
+	Phone INT NOT NULL
+);
+
+CREATE TABLE Book_Authors (
+	BookID INT NOT NULL,
+	AuthorName VARCHAR(50) NOT NULL,
+	CONSTRAINT fk_Books FOREIGN KEY (BookID) REFERENCES Books(BookID)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
